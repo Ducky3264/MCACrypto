@@ -1,0 +1,14 @@
+{
+  "name": "cryptopassword",
+  "version": "0.0.1",
+  "description": "Allows a user to have a secure password store after taking a value from an Arduino",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "David Love",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^16.0.0"
+  }
+}
