@@ -4,11 +4,12 @@
   "description": "Allows a user to have a secure password store after taking a value from an Arduino",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
   },
   "author": "David Love",
   "license": "ISC",
-  "dependencies": {
+  "devDependencies": {
     "electron": "^16.0.0"
   }
 }
