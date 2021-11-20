@@ -1,21 +1,25 @@
-<!--index.html-->
-
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <title>Hello World!</title>
+    <meta charset="utf-8">
+    <title>Landing Page</title>
+    <link href="bootstrap.css" rel="stylesheet" />
+    <link href="signin.css" rel="stylesheet" />
   </head>
-  <body>
-    <h1>Hello World!</h1>
-    We are using Node.js <span id="node-version"></span>,
-    Chromium <span id="chrome-version"></span>,
-    and Electron <span id="electron-version"></span>.
-
-    <!-- You can also require other files to run in this process -->
-    <script src="./renderer.js"></script>
+  <body style="background-color: black;" class="text-center">
+    <form class="form-signin rounded" style="background-color: rgb(18, 22, 27)">
+      <img class="mb-4" src="lock.png" alt="" width="72" height="72">
+      <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+      <input type="email" id="Uname" class="form-control" placeholder="Username" required autofocus style="background-color: rgb(18, 22, 27);">
+      <input type="password" id="Pword" class="form-control" placeholder="Password" required style="background-color: rgb(18, 22, 27);">
+      <div class="checkbox mb-3">
+        <label>
+          <input type="checkbox" value="remember-me"> Remember me
+        </label>
+      </div>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      <br />
+      <a class="mt-5 mb-3 text-muted font-italic">Not sure what this is?</a>
+    </form> 
+    </form>
   </body>
-</html>
