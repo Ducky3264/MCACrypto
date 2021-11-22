@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ."
+    "start": "i3-msg 'workspace 3; append_layout /home/ducky3264/.config/i3/workspace-dev.json' && electron ."
   },
   "author": "David Love",
   "license": "ISC",
