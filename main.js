@@ -1,7 +1,8 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 var crypto = require('crypto');
-const { fs } = require('fs');
+var fs  = require('fs');
+const { ECONNRESET } = require('constants');
 
 function createWindow () {
   // Create the browser window.
@@ -41,20 +42,35 @@ app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit()
 })
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
-
-// preload.js
-
-// All of the Node.js APIs are available in the preload process.
-// It has the same sandbox as a Chrome extension.
 ipcMain.on('async-form', (event, arg) => {
   const valarr = arg.split(";");
   const pword = valarr[0];
   const uname = valarr[1];
-  var data = crypto.createHash("sha256").update(pword, 'utf-8').digest('hex');
-  console.log("hash = " + data);
-  fs.open('./mcasum.txt', write, function(){
-
-  });
-});
+  var indata = crypto.createHash("sha256").update(pword, 'utf-8').digest('hex');
+  console.log("hash = " + indata);
+  try {
+    if (fs.existsSync("/var/lib/rfidstore/mastersum")) {
+      console.log("test2");
+      fs.readFile('/var/lib/rfidstore/mastersum', 'utf-8', (err, data) => {
+        console.log("test");
+        if (err) {
+          console.error(err);
+          return;
+        }
+        else {
+          if (indata == uname + " : " + data) {
+            event.reply('async-msg', 'true');
+            console.log("true");
+          } else {
+            console.log(indata);
+          }
+        }
+      })
+    } else {
+      console.log("test3");
+      fs.mkdirSync("/var/lib/rfidstore/");
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}); 
