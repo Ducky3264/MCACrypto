@@ -1,5 +1,7 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
+var crypto = require('crypto');
+const { fs } = require('fs');
 
 function createWindow () {
   // Create the browser window.
@@ -7,7 +9,8 @@ function createWindow () {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      nodeIntegration: true,
+      contextIsolation: false
     }
   })
 
@@ -45,13 +48,13 @@ app.on('window-all-closed', function () {
 
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
-window.addEventListener('DOMContentLoaded', () => {
-  const replaceText = (selector, text) => {
-    const element = document.getElementById(selector)
-    if (element) element.innerText = text
-  }
+ipcMain.on('async-form', (event, arg) => {
+  const valarr = arg.split(";");
+  const pword = valarr[0];
+  const uname = valarr[1];
+  var data = crypto.createHash("sha256").update(pword, 'utf-8').digest('hex');
+  console.log("hash = " + data);
+  fs.open('./mcasum.txt', write, function(){
 
-  for (const dependency of ['chrome', 'node', 'electron']) {
-    replaceText(`${dependency}-version`, process.versions[dependency])
-  }
-})
+  });
+});

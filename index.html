@@ -17,10 +17,20 @@
         <div class="mgn">
         <input type="email" id="Uname" class="form-control" placeholder="Username" required autofocus style="background-color: rgb(18, 22, 27);">
         <input type="password" id="Pword" class="form-control" placeholder="Password" required style="background-color: rgb(18, 22, 27);">
-      <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      <button class="btn btn-lg btn-primary btn-block" id="formbtn" type="button">Sign in</button>
       <br />
       <a class="mt-5 mb-3 text-muted font-italic ">Not sure what this is?</a> 
     </div>
     </form>
   </div>
+  
   </body>
+  <script>window.$ = window.jQuery = require('jquery');</script>
+  <script>
+    document.getElementById("formbtn").addEventListener('click', function() {
+      const {ipcRenderer} = require('electron');
+      ipcRenderer.send("async-form", $('#Pword').val() + ";" + $("#Uname").val());
+    })
+    
+
+  </script>
