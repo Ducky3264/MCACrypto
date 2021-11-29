@@ -58,11 +58,10 @@ ipcMain.on('async-form', (event, arg) => {
           return;
         }
         else {
-          if (indata == uname + " : " + data) {
+          if (data === (uname + ":" + indata + "\n")) {
             event.reply('async-msg', 'true');
-            console.log("true");
           } else {
-            console.log(indata);
+
           }
         }
       })
