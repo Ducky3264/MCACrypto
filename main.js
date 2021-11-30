@@ -5,7 +5,7 @@ var crypto = require('crypto');
 var fs  = require('fs');
 const { ECONNRESET } = require('constants');
 const algorithm = 'aes-256-cbc';
-const enctext = "This is some text to be encrypted";
+const enctext = Buffer.from("This is some text to be encrypted", "utf-8");
 function createWindow () {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -83,7 +83,7 @@ ipcMain.on('async-form', (event, arg) => {
               encrypt(derivedKey, salt, enctext, (encrpyted) => {
                 console.log("encrypted =" + encrpyted.toString('hex'));
                 decrypt(derivedKey, salt, encrpyted, (decryptedtext) => {
-                  console.log("The decrypted message is: " + decryptedtext.toString('hex'));
+                  console.log("The decrypted message is: " + decryptedtext.toString());
                 })
               })
             });
