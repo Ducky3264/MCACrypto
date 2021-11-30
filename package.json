@@ -4,7 +4,6 @@
   "description": "Allows a user to have a secure password store after taking a value from an Arduino",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "i3-msg 'workspace 3; append_layout /home/ducky3264/.config/i3/workspace-dev.json' && electron ."
   },
   "author": "David Love",
@@ -14,6 +13,7 @@
   },
   "dependencies": {
     "fs": "^0.0.1-security",
-    "jquery": "^3.6.0"
+    "jquery": "^3.6.0",
+    "pbkdf2": "^3.1.2"
   }
 }

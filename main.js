@@ -1,9 +1,11 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
+var pbkdf2 = require('pbkdf2')
 var crypto = require('crypto');
 var fs  = require('fs');
 const { ECONNRESET } = require('constants');
-
+const algorithm = 'aes-256-cbc';
+const enctext = "This is some text to be encrypted";
 function createWindow () {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -41,13 +43,26 @@ app.whenReady().then(() => {
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit()
 })
-
+function encrypt(secretKey, salt, content, _callback) {
+  const iv = crypto.randomBytes(16);
+  ivs = iv.toString('hex');
+  const cipher = crypto.createCipheriv(algorithm, secretKey, salt.slice(0, 16));
+  const encrypted = Buffer.concat([cipher.update(content), cipher.final()]);
+  _callback(encrypted);
+}
+function decrypt(secretKey, salt, cipher, _callback) {
+  const decipher = crypto.createDecipheriv(algorithm, secretKey, salt.slice(0, 16));
+  const decrpyted = Buffer.concat([decipher.update(cipher), decipher.final()]);
+  _callback(decrpyted);
+}
 ipcMain.on('async-form', (event, arg) => {
   const valarr = arg.split(";");
   const pword = valarr[0];
   const uname = valarr[1];
-  var indata = crypto.createHash("sha256").update(pword, 'utf-8').digest('hex');
-  console.log("hash = " + indata);
+  //var buf = crypto.randomBytes(16);
+  //const salt = buf.toString('hex');
+  //console.log("Salt = " + salt);
+
   try {
     if (fs.existsSync("/var/lib/rfidstore/mastersum")) {
       console.log("test2");
@@ -58,10 +73,23 @@ ipcMain.on('async-form', (event, arg) => {
           return;
         }
         else {
-          if (data === (uname + ":" + indata + "\n")) {
+          const salt = data.split(":")[2].slice(0, -1);
+          var indata = crypto.createHash("sha256").update(pword + salt, 'utf-8').digest('hex');
+          console.log("hash = " + indata);
+          if (data === (uname + ":" + indata + ":" + salt + "\n")) {
             event.reply('async-msg', 'true');
+            var derivedKey = pbkdf2.pbkdf2(pword, salt, 1, 32, 'sha256', (err, derivedKey) => {
+              console.log(derivedKey.toString("hex"));
+              encrypt(derivedKey, salt, enctext, (encrpyted) => {
+                console.log("encrypted =" + encrpyted.toString('hex'));
+                decrypt(derivedKey, salt, encrpyted, (decryptedtext) => {
+                  console.log("The decrypted message is: " + decryptedtext.toString('hex'));
+                })
+              })
+            });
           } else {
-
+            
+            
           }
         }
       })

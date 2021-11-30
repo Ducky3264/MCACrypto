@@ -30,7 +30,8 @@
     document.getElementById("formbtn").addEventListener('click', function() {
       const {ipcRenderer} = require('electron');
       ipcRenderer.send("async-form", $('#Pword').val() + ";" + $("#Uname").val());
-    })
+      
+    });
     
 
   </script>
