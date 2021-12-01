@@ -18,6 +18,9 @@
         <input type="email" id="Uname" class="form-control" placeholder="Username" required autofocus style="background-color: rgb(18, 22, 27);">
         <input type="password" id="Pword" class="form-control" placeholder="Password" required style="background-color: rgb(18, 22, 27);">
       <button class="btn btn-lg btn-primary btn-block" id="formbtn" type="button">Sign in</button>
+      <div style="padding-bottom:15px; padding-top:15px; padding-left:15px; padding-right:15px">
+        <p class="alert alert-danger" id="Hidden">We couldn't find that user.</p>
+    </div>
       <br />
       <a class="mt-5 mb-3 text-muted font-italic ">Not sure what this is?</a> 
     </div>
@@ -27,10 +30,21 @@
   </body>
   <script>window.$ = window.jQuery = require('jquery');</script>
   <script>
+    $(document).ready(function () {
+                    var text = document.getElementById("Hidden");
+                    text.style.display = "none";
+                    
+                });
     document.getElementById("formbtn").addEventListener('click', function() {
       const {ipcRenderer} = require('electron');
       ipcRenderer.send("async-form", $('#Pword').val() + ";" + $("#Uname").val());
-      
+      ipcRenderer.on('async-msg', (event, arg) => {
+        if (arg === "false") {
+          document.getElementById("Hidden").style.display = 'block';
+        } else if (arg === "true") {
+          document.getElementById("Hidden").style.display = 'none';
+        }
+      });
     });
     
 

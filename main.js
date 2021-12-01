@@ -55,6 +55,7 @@ function decrypt(secretKey, salt, cipher, _callback) {
   const decrpyted = Buffer.concat([decipher.update(cipher), decipher.final()]);
   _callback(decrpyted);
 }
+
 ipcMain.on('async-form', (event, arg) => {
   const valarr = arg.split(";");
   const pword = valarr[0];
@@ -65,36 +66,45 @@ ipcMain.on('async-form', (event, arg) => {
 
   try {
     if (fs.existsSync("/var/lib/rfidstore/mastersum")) {
-      console.log("test2");
       fs.readFile('/var/lib/rfidstore/mastersum', 'utf-8', (err, data) => {
-        console.log("test");
         if (err) {
           console.error(err);
           return;
         }
         else {
-          const salt = data.split(":")[2].slice(0, -1);
+        fs.readFile('/var/lib/rfidstore/mastertable', 'hex', (err, data_enc) => {
+          datab = Buffer.from(data_enc, 'hex')
+          //console.log("hash = " + indata);
+          //Verifies if the user has the corect password before doing the more computationally more expensive pbkdf2 decryption
+          var allacc = data.split('\n');
+          var curracc = "";
+          allacc.forEach(element => {
+            //This may be excessively computationally expensive. Node js offers no break like function so this was the only option I saw.
+            if (curracc === "" && element.split(':')[0] === uname) {
+              curracc = element;
+            }
+          })
+          const salt = curracc.split(":")[2];
           var indata = crypto.createHash("sha256").update(pword + salt, 'utf-8').digest('hex');
-          console.log("hash = " + indata);
-          if (data === (uname + ":" + indata + ":" + salt + "\n")) {
+          if (curracc === (uname + ":" + indata + ":" + salt)) {
             event.reply('async-msg', 'true');
-            var derivedKey = pbkdf2.pbkdf2(pword, salt, 1, 32, 'sha256', (err, derivedKey) => {
+            pbkdf2.pbkdf2(pword, salt, 1, 32, 'sha256', (err, derivedKey) => {
               console.log(derivedKey.toString("hex"));
-              encrypt(derivedKey, salt, enctext, (encrpyted) => {
-                console.log("encrypted =" + encrpyted.toString('hex'));
-                decrypt(derivedKey, salt, encrpyted, (decryptedtext) => {
-                  console.log("The decrypted message is: " + decryptedtext.toString());
-                })
-              })
+                decrypt(derivedKey, salt, datab, (decryptedtext) => {
+                 if (decryptedtext.toString() === "BEGINNING_OF_FILE") {
+                   //User has decrypted their passwords and is signed in
+                   console.log("Success");
+                 }
+                })            
             });
           } else {
-            
-            
+            event.reply('async-msg', 'false');
           }
+          });
         }
-      })
+      });
+    
     } else {
-      console.log("test3");
       fs.mkdirSync("/var/lib/rfidstore/");
     }
   } catch (err) {

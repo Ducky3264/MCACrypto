@@ -4,7 +4,8 @@
   "description": "Allows a user to have a secure password store after taking a value from an Arduino",
   "main": "main.js",
   "scripts": {
-    "start": "i3-msg 'workspace 3; append_layout /home/ducky3264/.config/i3/workspace-dev.json' && electron ."
+    "start": "i3-msg 'workspace 3; append_layout /home/ducky3264/.config/i3/workspace-dev.json' && electron .",
+    "create": "node createaccount.js"
   },
   "author": "David Love",
   "license": "ISC",
