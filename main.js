@@ -94,6 +94,7 @@ ipcMain.on('async-form', (event, arg) => {
                  if (decryptedtext.toString() === "BEGINNING_OF_FILE") {
                    //User has decrypted their passwords and is signed in
                    console.log("Success");
+                   mainWindow.loadFile("data.html");
                  }
                 })            
             });

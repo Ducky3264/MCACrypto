@@ -36,9 +36,7 @@ function writeToMastersum(Username, Password, app, _callback) {
     const salt = buf.toString('hex');
     var indata = crypto.createHash("sha256").update(Password + salt, 'utf-8').digest('hex');
     if (app) {
-        console.log("test");
-        fs.appendFile('/var/lib/rfidstore/mastersum', Username + ':' + indata + ':' + salt + "\n", (err) => {
-            console.log("test2");
+        fs.appendFile('/var/lib/rfidstore/mastersum', Username + ':' + indata + ':' + salt + "\n", (err) => {    
             pbkdf2.pbkdf2(Password, salt, 1, 32, 'sha256', (err, derivedKey) => {
                 console.log(derivedKey);
                 writeNewMastertable(derivedKey, salt, "BEGINNING_OF_FILE", (data) => {
@@ -49,6 +47,13 @@ function writeToMastersum(Username, Password, app, _callback) {
         });
     } else {
     fs.writeFile('/var/lib/rfidstore/mastersum', Username + ':' + indata + ':' + salt + "\n", (err) => {
+        pbkdf2.pbkdf2(Password, salt, 1, 32, 'sha256', (err, derivedKey) => {
+            console.log(derivedKey);
+            writeNewMastertable(derivedKey, salt, "BEGINNING_OF_FILE", (data) => {
+            console.log(data);
+            });
+            _callback(err);
+        });
         _callback(err);
     });
 }
