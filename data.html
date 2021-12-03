@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Landing Page</title>
+    <link href="data.css" rel="stylesheet" />
+</head>
+<body style="margin:0px">    
+    <nav>
+        <div style="text-align: center;">
+            <p class="headcla" style="display:inline-block">
+             Mark Dean
+            </p>
+            <br />
+            <div class="theme-wrapper">
+                <label class="ts" for="dmsw">
+                <input class="toggle" type="checkbox" id="dmsw"/>
+            </label>
+                <em style="color:var(--font-color); font-size:16px; text-align: justify;">Toggle dark mode!</em>
+                <!-- <path> tags from github, css done by me  -->
+                <svg id="sv1" class="mp1" style="fill: var(--moon-color); margin: 3px 0 0 7px;" stroke-linejoin="miter-clip" aria-hidden="true" width="50px" height="40px" viewBox="0 0 14 13" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-width="0.75px" style="stroke:transparent;" fill-rule="evenodd" clip-rule="evenodd" d="M4.52208 7.71754C7.5782 7.71754 10.0557 5.24006 10.0557 2.18394C10.0557 1.93498 10.0392 1.68986 10.0074 1.44961C9.95801 1.07727 10.3495 0.771159 10.6474 0.99992C12.1153 2.12716 13.0615 3.89999 13.0615 5.89383C13.0615 9.29958 10.3006 12.0605 6.89485 12.0605C3.95334 12.0605 1.49286 10.001 0.876728 7.24527C0.794841 6.87902 1.23668 6.65289 1.55321 6.85451C2.41106 7.40095 3.4296 7.71754 4.52208 7.71754Z"></path>
+                </svg>
+            </div>
+        
+        </div>
+    </nav>
+    <a href="https://www.biography.com/inventor/mark-dean">
+    <img src=https://www.biography.com/.image/t_share/MTE5NTU2MzE2MTMzODg1NDUx/mark-dean.jpg style="width:20%; height:20%; float: left;"/>
+    </a>
+    <a href="https://www.biography.com/inventor/mark-dean">   
+    <img src=https://atlantablackstar.com/wp-content/uploads/2015/09/MarkDean1.jpg style="width:20%; height:20%; float: right;"/>
+    </a> 
+    <div class="container">
+      <h1>Who was Mark Dean?</h1>
+      <p>Mark Dean is an african american iventor. He is best known for his work on the first color PC monitor, the ISA system bus, and the first gigahertz chip. Mark Dean did this work at IBM, holding three of the company's original nine patents. His work with Dennis Moeller paved the way for many early plug-in devices like disk drives and printers.</p>
+      <h1>Mark Dean's Life</h1>
+      <p>Dean was born in Jefferson City, Tennesse, on March 2, 1957. As a young boy he would commonly build things and showed interest in engineering, For example, Dean helped to make a tractor from scratch with his father, who worked at the Tennessee Valley Authority. He stood out in school as a gifted athlete and top student with straight As. He would later go on to study at University of Tennesse, where he studied engineering. After this, he took a job at IBM, where he'd work for the most part of his career. He proved to be an important piece of the company, developing some of their earliest and most important technologies.</p>
+        <br />
+        <i>“A lot of kids growing up today aren't told that you can be whatever you want to be. There may be obstacles, but there are no limits.” - Mark Dean</i>
+        <p style="font-size: 14px;">Read more about Mark Dean <a href="https://www.biography.com/inventor/mark-dean">here.</a></p>
+    </div>  
+</html>
+<script>
+     var pathm = document.querySelector('.mp1 path');
+     const toggle = document.querySelector('.ts input[type="checkbox"]');
+     var svg = document.querySelector("svg");
+     function switchTheme(ev) {
+        if (ev.target.checked) {
+        document.documentElement.setAttribute('data-theme', 'dk');
+        svg.style.transition = "fill 1s 2s ease-in";
+        var length = pathm.getTotalLength();
+        pathm.style.stroke = "#fbc000";
+        pathm.style.transition = pathm.style.WebkitTransition = 'none';
+        pathm.style.strokeDasharray = length + ' ' + length;
+        pathm.style.strokeDashoffset = length;
+        pathm.getBoundingClientRect();
+        pathm.style.transition = pathm.style.WebkitTransition = 'stroke-dashoffset 2s ease-in-out';
+        pathm.style.strokeDashoffset = '0';
+        } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        svg.style.transition = "fill 1s 0s ease-in";
+        var lengthm = pathm.getTotalLength();
+        pathm.style.stroke = "#fbc000";
+        pathm.style.transition = pathm.style.WebkitTransition = 'none';
+        pathm.style.strokeDasharray = lengthm + ' ' + lengthm;
+        pathm.style.strokeDashoffset = 0;
+        pathm.getBoundingClientRect();
+        pathm.style.transition = pathm.style.WebkitTransition = 'stroke-dashoffset 2s 0.5s ease-in-out';
+        pathm.style.strokeDashoffset = lengthm;
+        }
+        
+    }
+    toggle.addEventListener("change", switchTheme);
+</script>

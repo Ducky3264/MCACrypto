@@ -4,9 +4,11 @@ var pbkdf2 = require('pbkdf2')
 var crypto = require('crypto');
 var fs  = require('fs');
 const { ECONNRESET } = require('constants');
+const { eventNames } = require('process');
 const algorithm = 'aes-256-cbc';
 const enctext = Buffer.from("This is some text to be encrypted", "utf-8");
-function createWindow () {
+var curruname = "Guest";
+function createWindow (name) {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 800,
@@ -18,7 +20,7 @@ function createWindow () {
   })
 
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
+  mainWindow.loadFile(name)
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
@@ -28,7 +30,7 @@ function createWindow () {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  createWindow()
+  createWindow("data.html")
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
@@ -55,7 +57,9 @@ function decrypt(secretKey, salt, cipher, _callback) {
   const decrpyted = Buffer.concat([decipher.update(cipher), decipher.final()]);
   _callback(decrpyted);
 }
-
+ipcMain.on('Recieve-DataRequest', (event, arg) => {
+  event.reply('webdata-back', curruname);
+})
 ipcMain.on('async-form', (event, arg) => {
   const valarr = arg.split(";");
   const pword = valarr[0];
@@ -94,7 +98,7 @@ ipcMain.on('async-form', (event, arg) => {
                  if (decryptedtext.toString() === "BEGINNING_OF_FILE") {
                    //User has decrypted their passwords and is signed in
                    console.log("Success");
-                   mainWindow.loadFile("data.html");
+                   curruname = uname;
                  }
                 })            
             });
