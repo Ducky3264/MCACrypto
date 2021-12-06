@@ -8,6 +8,47 @@ const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
+const RSA = 'rsa';
+
+const passphrase = 'I had learned that some things are best kept secret.';
+
+let options = {
+
+    modulusLength: 1024 * 2,
+    publicKeyEncoding: {
+        type: 'spki',
+        format: 'pem'
+    },
+    privateKeyEncoding: {
+        type: 'pkcs8',
+        format: 'pem',
+        cipher: 'aes-256-cbc',
+        passphrase: passphrase
+    }
+
+};
+
+let start = Date.now();
+
+let myCallback = (err, publicKey, privateKey) => {
+
+    if (!err) {
+
+        console.log('\n');
+        console.log(publicKey);
+        console.log(privateKey);
+
+        let end = Date.now();
+        console.log("\n> Process completed successfully in " + (end - start) + " milliseconds.");
+
+    } else {
+        throw err;
+
+    }
+
+};
+
+crypto.generateKeyPair(RSA, options, myCallback);
 rl.stdoutMuted = false;
 rl.question("Input a username: ", (username) => {
     rl.question("Input a password: ", (password) => {
@@ -77,6 +118,8 @@ function writeNewMastertable(secretKey, salt, content, _callback) {
     })
     
 }
+
+
 function createAccount(Username, Password, _callback) {
         fs.access("/var/lib/rfidstore/mastersum", fs.constants.F_OK, (err) => {
             if (err) {
