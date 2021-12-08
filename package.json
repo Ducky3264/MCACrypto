@@ -15,6 +15,7 @@
   "dependencies": {
     "fs": "^0.0.1-security",
     "jquery": "^3.6.0",
-    "pbkdf2": "^3.1.2"
+    "pbkdf2": "^3.1.2",
+    "serialport": "^9.2.8"
   }
 }

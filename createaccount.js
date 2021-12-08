@@ -8,47 +8,7 @@ const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
-const RSA = 'rsa';
 
-const passphrase = 'I had learned that some things are best kept secret.';
-
-let options = {
-
-    modulusLength: 1024 * 2,
-    publicKeyEncoding: {
-        type: 'spki',
-        format: 'pem'
-    },
-    privateKeyEncoding: {
-        type: 'pkcs8',
-        format: 'pem',
-        cipher: 'aes-256-cbc',
-        passphrase: passphrase
-    }
-
-};
-
-let start = Date.now();
-
-let myCallback = (err, publicKey, privateKey) => {
-
-    if (!err) {
-
-        console.log('\n');
-        console.log(publicKey);
-        console.log(privateKey);
-
-        let end = Date.now();
-        console.log("\n> Process completed successfully in " + (end - start) + " milliseconds.");
-
-    } else {
-        throw err;
-
-    }
-
-};
-
-crypto.generateKeyPair(RSA, options, myCallback);
 rl.stdoutMuted = false;
 rl.question("Input a username: ", (username) => {
     rl.question("Input a password: ", (password) => {
@@ -57,7 +17,6 @@ rl.question("Input a username: ", (username) => {
                 createAccount(username, password, (data) => {
                 console.log(data);
                 });
-                
             } else {
                 console.log("Passwords do not match!");
                 process.exit(-1);

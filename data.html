@@ -8,8 +8,8 @@
 <body style="margin:0px">    
     <nav>
         <div style="text-align: center;">
-            <p class="headcla" style="display:inline-block">
-             Welcome, 
+            <p id="nheader" class="headcla" style="display:inline-block">
+             Loading
             </p>
             <br />
             <!--<div class="theme-wrapper">
@@ -30,6 +30,7 @@
      <p>View all your accounts below.</p>
     </div>  
 </html>
+<script>window.$ = window.jQuery = require('jquery');</script>
 <script>
      document.documentElement.setAttribute('data-theme', 'dk');
      var pathm = document.querySelector('.mp1 path');
@@ -62,6 +63,14 @@
         
     }
     //toggle.addEventListener("change", switchTheme);
-    
+    $(document).ready(function() {
+        const {ipcRenderer} = require('electron');
+        ipcRenderer.send('Recieve-DataRequest', "any");
+
+        ipcRenderer.on('webdata-back', (event, arg) => {
+            console.log(arg);
+            $("#nheader").text("Welcome, " + arg);
+        })
+    })
 
 </script>

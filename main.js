@@ -6,6 +6,12 @@ var fs  = require('fs');
 const { ECONNRESET } = require('constants');
 const { eventNames } = require('process');
 const algorithm = 'aes-256-cbc';
+var serialport = require("serialport");
+var SerialPort = serialport.SerialPort;
+var sp = new SerialPort("/dev/ttyACM0", {
+  baudrate: 9600,
+  parser: serialport.parsers.readline("\n")
+});
 const enctext = Buffer.from("This is some text to be encrypted", "utf-8");
 var curruname = "Guest";
 function createWindow (name) {
@@ -30,7 +36,7 @@ function createWindow (name) {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  createWindow("data.html")
+  createWindow("index.html")
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
@@ -57,6 +63,9 @@ function decrypt(secretKey, salt, cipher, _callback) {
   const decrpyted = Buffer.concat([decipher.update(cipher), decipher.final()]);
   _callback(decrpyted);
 }
+sp.on('data', function(data) {
+  console.log(data);
+})
 ipcMain.on('Recieve-DataRequest', (event, arg) => {
   event.reply('webdata-back', curruname);
 })
@@ -91,7 +100,6 @@ ipcMain.on('async-form', (event, arg) => {
           const salt = curracc.split(":")[2];
           var indata = crypto.createHash("sha256").update(pword + salt, 'utf-8').digest('hex');
           if (curracc === (uname + ":" + indata + ":" + salt)) {
-            event.reply('async-msg', 'true');
             pbkdf2.pbkdf2(pword, salt, 1, 32, 'sha256', (err, derivedKey) => {
               console.log(derivedKey.toString("hex"));
                 decrypt(derivedKey, salt, datab, (decryptedtext) => {
@@ -99,6 +107,7 @@ ipcMain.on('async-form', (event, arg) => {
                    //User has decrypted their passwords and is signed in
                    console.log("Success");
                    curruname = uname;
+                   event.reply('async-msgpsd', 'true');
                  }
                 })            
             });
