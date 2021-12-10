@@ -30,15 +30,16 @@
   </body>
   <script>window.$ = window.jQuery = require('jquery');</script>
   <script>
+    const {ipcRenderer} = require('electron');
     $(document).ready(function () {
                     var text = document.getElementById("Hidden");
                     text.style.display = "none";
-                    
+                    setTimeout(checkard, 1000);
                 });
     document.getElementById("formbtn").addEventListener('click', function() {
-      const {ipcRenderer} = require('electron');
+      
       ipcRenderer.send("async-form", $('#Pword').val() + ";" + $("#Uname").val());
-      ipcRenderer.on('async-msg', (event, arg) => {
+      ipcRenderer.on('async-msgpsd', (event, arg) => {
         if (arg === "false") {
           document.getElementById("Hidden").style.display = 'block';
         } else if (arg === "true") {
@@ -47,6 +48,14 @@
         }
       });
     });
+    function checkard() {
+      ipcRenderer.send("checkardstatus");
+      setTimeout(checkard, 1000);
+    }
+    ipcRenderer.on("ardstatusreply", (event, arg) => {
+      console.log(arg);
+    }) 
+
     
 
   </script>

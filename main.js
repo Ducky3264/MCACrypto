@@ -9,20 +9,19 @@ const { eventNames } = require('process');
 const algorithm = 'aes-256-cbc';
 //Open the serial port and create handlers for events on it
 var SerialPort = require('serialport');
-var myPort = new SerialPort("/dev/pts/13", 9600);
+var ardstatus = "disconnected";
+/**var myPort = new SerialPort("/dev/ttyACM1", 9600);
 var Readline = SerialPort.parsers.Readline;	
 var parser = new Readline();								
 myPort.pipe(parser);
-var ardV = "udef";											
+var ardV = "udef";
 SerialPort.list().then (
   ports => ports.forEach(port =>console.log(port.path)),
   err => console.log(err)
 )
 myPort.on('open', () => {
-  ipcMain.send("ardopen", "true");
-  fs.readFile('/var/lib/rfidstore/ardcheck', 'utf-8', (err, data) => {
-    ardV = data;
-  });
+  console.log("port open");
+  
 });    
 parser.on('data', (data) => {
   console.log(data);
@@ -33,7 +32,46 @@ parser.on('data', (data) => {
   } else {
     ipcMain.send("unlock", "false");
   }
-}); 
+}); **/
+var myPort = new SerialPort('/dev/ttyACM0', 9600);// open the port
+var Readline = SerialPort.parsers.Readline;	// make instance of Readline parser
+var parser = new Readline();								// make a new parser to read ASCII lines
+myPort.pipe(parser);													// pipe the serial stream to the parser
+
+// these are the definitions for the serial events:
+myPort.on('open', () => {
+  console.log('port open. Data rate: ' + myPort.baudRate);
+  ardstatus = "connected";
+  //ipcMain.send("ardopen", "true");
+  fs.readFile('/var/lib/rfidstore/ardcheck', 'utf-8', (err, data) => {
+    ardV = data.slice(0, -1);
+  });
+});    // called when the serial port opens
+myPort.on('close', () => {
+  console.log('port closed.');
+  ardstatus = "disconnected";
+});  // called when the serial port closes
+myPort.on('error', (error) => {
+  console.log('serial port error: ' + error);
+});   // called when there's an error with the serial port
+parser.on('data', (data) => {
+  try {
+    console.log(data);
+    var tag = data.split(":")[0];
+    if (tag === "UID tag ") {
+      var intag = data.split(":")[1];
+      var uid = intag.replace(/\s/g, "");
+      var indata = crypto.createHash("sha256").update(uid, 'utf-8').digest('hex');
+      console.log(indata);
+      if (indata === ardV) {
+        ardstatus = "authed";
+      }
+  } 
+} catch (e) {
+}
+});  
+
+
 //Unused example text
 const enctext = Buffer.from("This is some text to be encrypted", "utf-8");
 var curruname = "Guest";
@@ -90,6 +128,15 @@ function decrypt(secretKey, salt, cipher, _callback) {
 ipcMain.on('Recieve-DataRequest', (event, arg) => {
   event.reply('webdata-back', curruname);
 })
+ipcMain.on('checkardstatus', (event, arg) => {
+  if (ardstatus === "disconnected") {
+    event.reply("ardstatusreply", "disconnected");
+  } else if (ardstatus === "connected") {
+    event.reply("ardstatusreply", "connected");
+  } else if (ardstatus === "authed") {
+    event.reply("ardstatusreply", "authed");
+  }
+})
 //Recieve login data from index.html and check it. Reply with true if the user can authenticate. 
 ipcMain.on('async-form', (event, arg) => {
   const valarr = arg.split(";");
@@ -138,7 +185,7 @@ ipcMain.on('async-form', (event, arg) => {
                 })            
             });
           } else {
-            event.reply('async-msg', 'false');
+            event.reply('async-msgpsd', 'false');
             //reply that the user has the wrong password.
           }
           });
