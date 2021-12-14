@@ -14,7 +14,7 @@ rl.question("Input a username: ", (username) => {
     rl.question("Input a password: ", (password) => {
         rl.question("Reenter your password: ", (pass2) => {
             if (password === pass2) {
-                createAccount(username, password, (data) => {
+                createAccount(username, password + "0C73BBCC", (data) => {
                 console.log(data);
                 });
             } else {
@@ -39,7 +39,7 @@ function writeToMastersum(Username, Password, app, _callback) {
         fs.appendFile('/var/lib/rfidstore/mastersum', Username + ':' + indata + ':' + salt + "\n", (err) => {    
             pbkdf2.pbkdf2(Password, salt, 1, 32, 'sha256', (err, derivedKey) => {
                 console.log(derivedKey);
-                writeNewMastertable(derivedKey, salt, "BEGINNING_OF_FILE", (data) => {
+                writeNewMastertable(derivedKey, salt, "BEGINNING_OF_FILE;Example Account:Example Username:Example Password;Google:alice:password;", (data) => {
                 console.log(data);
                 });
                 _callback(err);

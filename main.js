@@ -10,15 +10,18 @@ const algorithm = 'aes-256-cbc';
 //Open the serial port and create handlers for events on it
 var SerialPort = require('serialport');
 var ardstatus = "disconnected";
+var giventag = "0C73BBCC";
+var currentuser = AccData("Guest", "unauthed");
+SerialPort.list().then (
+  ports => ports.forEach(port =>console.log(port.path)),
+  err => console.log(err)
+)
 /**var myPort = new SerialPort("/dev/ttyACM1", 9600);
 var Readline = SerialPort.parsers.Readline;	
 var parser = new Readline();								
 myPort.pipe(parser);
 var ardV = "udef";
-SerialPort.list().then (
-  ports => ports.forEach(port =>console.log(port.path)),
-  err => console.log(err)
-)
+
 myPort.on('open', () => {
   console.log("port open");
   
@@ -54,6 +57,7 @@ myPort.on('close', () => {
 myPort.on('error', (error) => {
   console.log('serial port error: ' + error);
 });   // called when there's an error with the serial port
+ 
 parser.on('data', (data) => {
   try {
     console.log(data);
@@ -71,10 +75,9 @@ parser.on('data', (data) => {
 }
 });  
 
-
 //Unused example text
 const enctext = Buffer.from("This is some text to be encrypted", "utf-8");
-var curruname = "Guest";
+
 function createWindow (name) {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -126,7 +129,7 @@ function decrypt(secretKey, salt, cipher, _callback) {
 //Reply with the current username on data requested from the page. IpcMain and IpcRenderer 
 //are event emitters for communicated from server to webpage.
 ipcMain.on('Recieve-DataRequest', (event, arg) => {
-  event.reply('webdata-back', curruname);
+  event.reply('webdata-back', currentuser);
 })
 ipcMain.on('checkardstatus', (event, arg) => {
   if (ardstatus === "disconnected") {
@@ -137,6 +140,16 @@ ipcMain.on('checkardstatus', (event, arg) => {
     event.reply("ardstatusreply", "authed");
   }
 })
+function AccData(uname, stat) {
+  this.uname = uname;
+  this.status = stat;
+}
+AccData.prototype.getUsername = function() {
+  return uname;
+}
+AccData.prototype.getStatus = function() {
+  return stat;
+}
 //Recieve login data from index.html and check it. Reply with true if the user can authenticate. 
 ipcMain.on('async-form', (event, arg) => {
   const valarr = arg.split(";");
@@ -144,6 +157,7 @@ ipcMain.on('async-form', (event, arg) => {
   const uname = valarr[1];
   try {
     if (fs.existsSync("/var/lib/rfidstore/mastersum")) {
+      if (ardstatus === "authed") {
       fs.readFile('/var/lib/rfidstore/mastersum', 'utf-8', (err, data) => {
         if (err) {
           console.error(err);
@@ -166,16 +180,16 @@ ipcMain.on('async-form', (event, arg) => {
           const salt = curracc.split(":")[2];
           //Create a hash based on the password provided and the salt. If it is the same as the one in the database,
           //attempt to decrypt.
-          var indata = crypto.createHash("sha256").update(pword + salt, 'utf-8').digest('hex');
+          var indata = crypto.createHash("sha256").update(pword + giventag + salt, 'utf-8').digest('hex');
           if (curracc === (uname + ":" + indata + ":" + salt)) {
             //Derive a key. 
-            pbkdf2.pbkdf2(pword, salt, 1, 32, 'sha256', (err, derivedKey) => {
+            pbkdf2.pbkdf2(pword + giventag, salt, 1, 32, 'sha256', (err, derivedKey) => {
                 decrypt(derivedKey, salt, datab, (decryptedtext) => {
                  //Try to decrypt. If the user has the wrong key, the decrypted text will not read BEGINNING_OF_FILE.
                   if (decryptedtext.toString() === "BEGINNING_OF_FILE") {
                    //User has decrypted their passwords and is signed in
                    console.log("Success");
-                   curruname = uname;
+                   currentuser. = uname;
                    event.reply('async-msgpsd', 'true');
                    //Reply that the user has the correct password so they can be redirected.
                  } else{
@@ -195,6 +209,9 @@ ipcMain.on('async-form', (event, arg) => {
     } else {
       fs.mkdirSync("/var/lib/rfidstore/");
     }
+  } else {
+    event.reply('async-msgpsd', "falseard")
+  }
   } catch (err) {
     console.error(err);
   }
