@@ -10,8 +10,9 @@ const algorithm = 'aes-256-cbc';
 //Open the serial port and create handlers for events on it
 var SerialPort = require('serialport');
 var ardstatus = "disconnected";
-var giventag = "0C73BBCC";
-var currentuser = AccData("Guest", "unauthed");
+var giventag = "";
+var ardV = "";
+var currentuser = new AccData("Guest", "unauthed");
 SerialPort.list().then (
   ports => ports.forEach(port =>console.log(port.path)),
   err => console.log(err)
@@ -36,7 +37,7 @@ parser.on('data', (data) => {
     ipcMain.send("unlock", "false");
   }
 }); **/
-var myPort = new SerialPort('/dev/ttyACM0', 9600);// open the port
+var myPort = new SerialPort('/dev/ttyACM1', 9600);// open the port
 var Readline = SerialPort.parsers.Readline;	// make instance of Readline parser
 var parser = new Readline();								// make a new parser to read ASCII lines
 myPort.pipe(parser);													// pipe the serial stream to the parser
@@ -69,6 +70,7 @@ parser.on('data', (data) => {
       console.log(indata);
       if (indata === ardV) {
         ardstatus = "authed";
+        giventag = uid;
       }
   } 
 } catch (e) {
@@ -143,6 +145,7 @@ ipcMain.on('checkardstatus', (event, arg) => {
 function AccData(uname, stat) {
   this.uname = uname;
   this.status = stat;
+  Accounts = "";
 }
 AccData.prototype.getUsername = function() {
   return uname;
@@ -189,7 +192,8 @@ ipcMain.on('async-form', (event, arg) => {
                   if (decryptedtext.toString() === "BEGINNING_OF_FILE") {
                    //User has decrypted their passwords and is signed in
                    console.log("Success");
-                   currentuser. = uname;
+                   currentuser.uname = uname;
+                   currentuser.Accounts = decryptedtext.toString()
                    event.reply('async-msgpsd', 'true');
                    //Reply that the user has the correct password so they can be redirected.
                  } else{
@@ -207,7 +211,7 @@ ipcMain.on('async-form', (event, arg) => {
       });
     
     } else {
-      fs.mkdirSync("/var/lib/rfidstore/");
+      
     }
   } else {
     event.reply('async-msgpsd', "falseard")

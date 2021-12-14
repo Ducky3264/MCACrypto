@@ -68,10 +68,12 @@
         ipcRenderer.send('Recieve-DataRequest', "any");
         ipcRenderer.on('webdata-back', (event, arg) => {
             if (arg.status !== "authed") {
-                location.href = "./index.html"
+                console.log(arg.status);
+ 
             }
             console.log(arg);
-            $("#nheader").text("Welcome, " + arg);
+            $("#nheader").text("Welcome, " + arg.uname);
+
         })
     })
 
