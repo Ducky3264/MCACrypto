@@ -36,7 +36,7 @@ function writeToMastersum(Username, Password, app, _callback) {
     const salt = buf.toString('hex');
     var indata = crypto.createHash("sha256").update(Password + salt, 'utf-8').digest('hex');
     if (app) {
-        fs.appendFile('/var/lib/rfidstore/mastersum', Username + ':' + indata + ':' + salt + "\n", (err) => {    
+        fs.appendFile('./mastersum', Username + ':' + indata + ':' + salt + "\n", (err) => {    
             pbkdf2.pbkdf2(Password, salt, 1, 32, 'sha256', (err, derivedKey) => {
                 console.log(derivedKey);
                 writeNewMastertable(derivedKey, salt, "BEGINNING_OF_FILE;Example Account:Example Username:Example Password;Google:alice:password;", (data) => {
@@ -46,7 +46,7 @@ function writeToMastersum(Username, Password, app, _callback) {
             });
         });
     } else {
-    fs.writeFile('/var/lib/rfidstore/mastersum', Username + ':' + indata + ':' + salt + "\n", (err) => {
+    fs.writeFile('./mastersum', Username + ':' + indata + ':' + salt + "\n", (err) => {
         pbkdf2.pbkdf2(Password, salt, 1, 32, 'sha256', (err, derivedKey) => {
             console.log(derivedKey);
             writeNewMastertable(derivedKey, salt, "BEGINNING_OF_FILE;Example Account:Example Username:Example Password;Google:alice:password;", (data) => {
@@ -61,7 +61,7 @@ function writeToMastersum(Username, Password, app, _callback) {
 function writeNewMastertable(secretKey, salt, content, _callback) {
     console.log("writing");
     encrypt(secretKey, salt, content, (data) => {
-        fs.writeFile('/var/lib/rfidstore/mastertable', data, (err) => {
+        fs.writeFile('./mastertable', data, (err) => {
             if (err !== null) {
                 console.log(err);
                 _callback(err);
@@ -80,7 +80,7 @@ function writeNewMastertable(secretKey, salt, content, _callback) {
 
 
 function createAccount(Username, Password, _callback) {
-        fs.access("/var/lib/rfidstore/mastersum", fs.constants.F_OK, (err) => {
+        fs.access("./mastersum", fs.constants.F_OK, (err) => {
             if (err) {
                 writeToMastersum(Username, Password, false, (err) => {
                     if (err != null) {
@@ -89,7 +89,7 @@ function createAccount(Username, Password, _callback) {
                     }
                 });
             } else {
-                fs.readFile('/var/lib/rfidstore/mastersum', 'utf-8', (err, data) => {
+                fs.readFile('./mastersum', 'utf-8', (err, data) => {
                     if (data.split(':')[0] == Username) {
                         _callback("Already Exists");
                     };

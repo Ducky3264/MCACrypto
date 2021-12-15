@@ -11,12 +11,7 @@ const algorithm = 'aes-256-cbc';
 var SerialPort = require('serialport');
 var ardstatus = "disconnected";
 var giventag = "";
-<<<<<<< HEAD
-var ardV = "";
 var currentuser = new AccData("Guest", "unauthed");
-=======
-var currentuser = AccData("Guest", "unauthed");
->>>>>>> 005937c855484aeea03a526d8896f02e1c694319
 SerialPort.list().then (
   ports => ports.forEach(port =>console.log(port.path)),
   err => console.log(err)
@@ -51,7 +46,7 @@ myPort.on('open', () => {
   console.log('port open. Data rate: ' + myPort.baudRate);
   ardstatus = "connected";
   //ipcMain.send("ardopen", "true");
-  fs.readFile('/var/lib/rfidstore/ardcheck', 'utf-8', (err, data) => {
+  fs.readFile('./ardcheck', 'utf-8', (err, data) => {
     ardV = data.slice(0, -1);
   });
 });    // called when the serial port opens
@@ -163,15 +158,15 @@ ipcMain.on('async-form', (event, arg) => {
   const pword = valarr[0];
   const uname = valarr[1];
   try {
-    if (fs.existsSync("/var/lib/rfidstore/mastersum")) {
+    if (fs.existsSync("./mastersum")) {
       if (ardstatus === "authed") {
-      fs.readFile('/var/lib/rfidstore/mastersum', 'utf-8', (err, data) => {
+      fs.readFile('./mastersum', 'utf-8', (err, data) => {
         if (err) {
           console.error(err);
           return;
         }
         else {
-        fs.readFile('/var/lib/rfidstore/mastertable', 'hex', (err, data_enc) => {
+        fs.readFile('./mastertable', 'hex', (err, data_enc) => {
           datab = Buffer.from(data_enc, 'hex')
           //Verifies if the user has the corect password before doing the more computationally more expensive pbkdf2 decryption
           var allacc = data.split('\n');
@@ -195,12 +190,10 @@ ipcMain.on('async-form', (event, arg) => {
                  //Try to decrypt. If the user has the wrong key, the decrypted text will not read BEGINNING_OF_FILE.
                   if (decryptedtext.toString().split(";")[0] === "BEGINNING_OF_FILE") {
                    //User has decrypted their passwords and is signed in
+                   var a = decryptedtext.toString();
                    console.log("Success");
                    currentuser.uname = uname;
-<<<<<<< HEAD
-                   currentuser.Accounts = decryptedtext.toString()
-=======
->>>>>>> 005937c855484aeea03a526d8896f02e1c694319
+                   currentuser.Accounts = decryptedtext.toString();
                    event.reply('async-msgpsd', 'true');
                    //Reply that the user has the correct password so they can be redirected.
                  } else{
@@ -219,6 +212,9 @@ ipcMain.on('async-form', (event, arg) => {
     
     } else {
       event.reply('async-msgpsd', "falseard")
+      ardstatus = "authed";
+      giventag = "0C73BBCC";
+
     }
   } else {
     
