@@ -11,8 +11,12 @@ const algorithm = 'aes-256-cbc';
 var SerialPort = require('serialport');
 var ardstatus = "disconnected";
 var giventag = "";
+<<<<<<< HEAD
 var ardV = "";
 var currentuser = new AccData("Guest", "unauthed");
+=======
+var currentuser = AccData("Guest", "unauthed");
+>>>>>>> 005937c855484aeea03a526d8896f02e1c694319
 SerialPort.list().then (
   ports => ports.forEach(port =>console.log(port.path)),
   err => console.log(err)
@@ -193,7 +197,10 @@ ipcMain.on('async-form', (event, arg) => {
                    //User has decrypted their passwords and is signed in
                    console.log("Success");
                    currentuser.uname = uname;
+<<<<<<< HEAD
                    currentuser.Accounts = decryptedtext.toString()
+=======
+>>>>>>> 005937c855484aeea03a526d8896f02e1c694319
                    event.reply('async-msgpsd', 'true');
                    //Reply that the user has the correct password so they can be redirected.
                  } else{
