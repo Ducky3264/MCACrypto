@@ -21,7 +21,7 @@
    
 }
 
-  body {  
+  .bodycla {  
   font-size: 22px;
   line-height: 1.42857143;
   transition: background-color ease 0.25s;
@@ -34,7 +34,7 @@
   height:100%;
   line-height: inherit;
 }
-  nav {
+  .navcla {
   position: relative;
   min-height: 0px;
   margin-bottom: 20px;

@@ -9,7 +9,7 @@
   <body style="background-color: black;" class="text-center">
     <div class="container">
     <div class="text-center" style="width:100%; vertical-align: top;">
-    <h1 class="h1 mb-3 font-weight-normal">Placeholder name</h1>
+    <h1 class="h1 mb-3 font-weight-normal">RFID Password Manager</h1>
   </div>
   <form class="form-signin rounded" style="background-color: rgb(18, 22, 27); height:500px; width:475px; justify-content: center; align-items: center; display:flex">
       <div class="container text-center" style="display: flexbox; justify-content: center; align-items: center; margin:auto;">
@@ -21,6 +21,9 @@
       <div style="padding-bottom:15px; padding-top:15px; padding-left:15px; padding-right:15px">
         <p class="alert alert-danger" id="Hidden">We couldn't find that user.</p>
     </div>
+    <div style="padding-bottom:15px; padding-top:15px; padding-left:15px; padding-right:15px">
+      <p class="alert alert-danger" id="HiddenArd">Please connect your RFID scanner and scan the correct card.</p>
+  </div>
       <br />
       <a class="mt-5 mb-3 text-muted font-italic ">Not sure what this is?</a> 
     </div>
@@ -34,6 +37,8 @@
     $(document).ready(function () {
                     var text = document.getElementById("Hidden");
                     text.style.display = "none";
+                    var text = document.getElementById("HiddenArd");
+                    text.style.display = "none";
                     setTimeout(checkard, 1000);
                 });
     document.getElementById("formbtn").addEventListener('click', function() {
@@ -45,8 +50,11 @@
         } else if (arg === "true") {
           document.getElementById("Hidden").style.display = 'none';
           location.href = "./data.html"
+        } else if (arg === "falseard") {
+          document.getElementById("HiddenArd").style.display = 'block';
         }
       });
+      
     });
     function checkard() {
       ipcRenderer.send("checkardstatus");

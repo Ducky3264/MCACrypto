@@ -49,7 +49,7 @@ function writeToMastersum(Username, Password, app, _callback) {
     fs.writeFile('/var/lib/rfidstore/mastersum', Username + ':' + indata + ':' + salt + "\n", (err) => {
         pbkdf2.pbkdf2(Password, salt, 1, 32, 'sha256', (err, derivedKey) => {
             console.log(derivedKey);
-            writeNewMastertable(derivedKey, salt, "BEGINNING_OF_FILE", (data) => {
+            writeNewMastertable(derivedKey, salt, "BEGINNING_OF_FILE;Example Account:Example Username:Example Password;Google:alice:password;", (data) => {
             console.log(data);
             });
             _callback(err);

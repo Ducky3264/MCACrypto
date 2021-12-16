@@ -41,7 +41,7 @@ parser.on('data', (data) => {
     ipcMain.send("unlock", "false");
   }
 }); **/
-var myPort = new SerialPort('/dev/ttyACM1', 9600);// open the port
+var myPort = new SerialPort('/dev/ttyACM0', 9600);// open the port
 var Readline = SerialPort.parsers.Readline;	// make instance of Readline parser
 var parser = new Readline();								// make a new parser to read ASCII lines
 myPort.pipe(parser);													// pipe the serial stream to the parser
@@ -193,7 +193,7 @@ ipcMain.on('async-form', (event, arg) => {
             pbkdf2.pbkdf2(pword + giventag, salt, 1, 32, 'sha256', (err, derivedKey) => {
                 decrypt(derivedKey, salt, datab, (decryptedtext) => {
                  //Try to decrypt. If the user has the wrong key, the decrypted text will not read BEGINNING_OF_FILE.
-                  if (decryptedtext.toString() === "BEGINNING_OF_FILE") {
+                  if (decryptedtext.toString().split(";")[0] === "BEGINNING_OF_FILE") {
                    //User has decrypted their passwords and is signed in
                    console.log("Success");
                    currentuser.uname = uname;
@@ -218,10 +218,10 @@ ipcMain.on('async-form', (event, arg) => {
       });
     
     } else {
-      
+      event.reply('async-msgpsd', "falseard")
     }
   } else {
-    event.reply('async-msgpsd', "falseard")
+    
   }
   } catch (err) {
     console.error(err);

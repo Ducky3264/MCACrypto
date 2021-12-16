@@ -4,9 +4,10 @@
     <meta charset="utf-8">
     <title>Landing Page</title>
     <link href="data.css" rel="stylesheet" />
+    <link href="bootstrap.css" rel="stylesheet" />
 </head>
-<body style="margin:0px">    
-    <nav>
+<body class="bodycla" style="margin:0px">    
+    <nav class="navcla">
         <div style="text-align: center;">
             <p id="nheader" class="headcla" style="display:inline-block">
              Loading
@@ -25,9 +26,10 @@
         
         </div>
     </nav>
-    <div class="container">
+    <div>
       <h1></h1>
      <p>View all your accounts below.</p>
+     <div id="accscontainer" style="background-color: var(--bg-color)"></div>
     </div>  
 </html>
 <script>window.$ = window.jQuery = require('jquery');</script>
@@ -73,6 +75,23 @@
             }
             console.log(arg);
             $("#nheader").text("Welcome, " + arg.uname);
+            var accs = arg.Accounts.split(';');
+            accs.forEach((item) => {
+                console.log(item);
+                if (item !== "BEGINNING_OF_FILE" && item.split(":")[1] !== undefined) {
+                const classes = [ 'border', 'border-white', 'rounded']
+                var accitems = item.split(":");
+                var newdiv = document.createElement("div");
+                newdiv.style.margin = "20px"
+                newdiv.innerHTML = "<p style='width:100%'>Account: " + accitems[0] + "</p> <p style='width:100%'>Username: " + accitems[1] + "</p> <p style='width:100%'>Password: " + accitems[2] + "</p>"; 
+                classes.forEach((itemc) => {
+                    newdiv.classList.add(itemc);
+                })
+                
+                
+                document.getElementById("accscontainer").appendChild(newdiv);
+                }
+            });
 
         })
     })
