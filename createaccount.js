@@ -4,11 +4,11 @@ var crypto = require('crypto');
 var fs  = require('fs');
 const readline = require("readline");
 const algorithm = 'aes-256-cbc';
+//Include electron and add crypto 
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
-
 rl.stdoutMuted = false;
 rl.question("Input a username: ", (username) => {
     rl.question("Input a password: ", (password) => {
